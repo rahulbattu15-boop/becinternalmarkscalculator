@@ -330,12 +330,22 @@
             document.querySelectorAll('.error').forEach(el => el.style.display = 'none');
             const resultSection = document.getElementById('resultSection');
             resultSection.style.display = 'none';
+            const mid1Input = document.getElementById('mid1').value;
+            const mid2Input = document.getElementById('mid2').value;
+            const aat1Input = document.getElementById('aat1').value;
+            const aat2Input = document.getElementById('aat2').value;
+            const attInput = document.getElementById('attendance').value;
+            if (mid1Input === "" ||mid2Input === "" ||aat1Input === "" ||aat2Input === "" ||attInput === "") {
+                alert("⚠️ Please fill all fields before calculating!");
+                return;
+            }
             // Get values
             const mid1 = parseFloat(document.getElementById('mid1').value) || 0;
             const mid2 = parseFloat(document.getElementById('mid2').value) || 0;
             const aat1 = parseFloat(document.getElementById('aat1').value) || 0;
             const aat2 = parseFloat(document.getElementById('aat2').value) || 0;
             const att = parseFloat(document.getElementById('attendance').value) || 0;
+            
             // Validation
             let valid = true;
             if (mid1 < 0 || mid1 > 30) { document.getElementById('errMid1').style.display = 'block'; valid = false; }
