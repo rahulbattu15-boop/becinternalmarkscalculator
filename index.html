@@ -3,263 +3,391 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Result Calculator</title>
+    <title>Student Result Calculator - R24 Regulations</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             margin: 0;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        header {
+            text-align: center;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 20px;
+            width: 100%;
+            max-width: 1200px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        header img {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        nav {
+            background: #34495e;
+            display: flex;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 500px;
+            justify-content: center;
+            gap: 10px;
+        }
+        nav button {
+            padding: 10px 20px;
+            border: none;
+            background: #fdbb2d;
+            color: #333;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        nav button:hover, nav button.active {
+            background: #1abc9c;
+            color: white;
+        }
+        .section {
+            display: none;
+            width: 100%;
+            max-width: 500px;
+        }
+        .section.active {
+            display: block;
         }
         .calculator-card {
             background: #fff;
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            width: 100%;
-            max-width: 500px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
         }
         h2 {
             text-align: center;
             color: #333;
             margin-top: 0;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
+            border-bottom: 3px solid #1a2a6c;
+            padding-bottom: 15px;
         }
         .input-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         label {
             display: block;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             color: #555;
-            font-size: 14px;
         }
         .max-marks-hint {
             font-weight: normal;
-            font-size: 12px;
+            font-size: 13px;
             color: #888;
         }
         input {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
             font-size: 16px;
+            transition: border-color 0.3s;
         }
         input:focus {
             outline: none;
-            border-color: #b21f1f;
+            border-color: #1a2a6c;
         }
-        button {
+        button.calculate {
             width: 100%;
-            padding: 12px;
-            background: #1a2a6c;
+            padding: 15px;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
             margin-top: 10px;
-            transition: 0.3s;
+            transition: transform 0.3s;
         }
-        button:hover {
-            background: #fdbb2d;
-            color: #333;
+        button.calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
         #resultSection {
-            margin-top: 25px;
+            margin-top: 30px;
             display: none;
-            border-top: 2px dashed #ccc;
-            padding-top: 20px;
+            border-top: 3px dashed #1a2a6c;
+            padding-top: 25px;
         }
         .breakdown-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
-            font-size: 14px;
+            margin-bottom: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            overflow: hidden;
         }
-        .breakdown-table td {
-            padding: 8px;
-            border-bottom: 1px solid #eee;
+        .breakdown-table th, .breakdown-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .breakdown-table th {
+            background: #1a2a6c;
+            color: white;
         }
         .breakdown-table td:last-child {
             text-align: right;
             font-weight: bold;
+            color: #1a2a6c;
+        }
+        .total-row {
+            border-top: 3px solid #333;
+            font-size: 16px;
+        }
+        .total-row th, .total-row td {
+            background: #fdbb2d;
+            color: #333;
         }
         .status-box {
             text-align: center;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 24px;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 28px;
             font-weight: bold;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
         }
         .pass {
-            background: #d4edda;
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
             color: #155724;
-            border: 2px solid #c3e6cb;
+            border: 3px solid #28a745;
         }
         .fail {
-            background: #f8d7da;
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
             color: #721c24;
-            border: 2px solid #f5c6cb;
+            border: 3px solid #dc3545;
         }
         .error {
-            color: red;
+            color: #dc3545;
             font-size: 13px;
             margin-top: 5px;
             display: none;
         }
+        .r24-rules {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            line-height: 1.6;
+        }
+        .r24-rules h3 {
+            color: #1a2a6c;
+            margin-top: 0;
+        }
+        .r24-rules ul {
+            padding-left: 20px;
+        }
         footer {
-         position: fixed;
-         bottom: 10px;
-          width: 100%;
-          text-align: center;
-            color: #fff;
-            background-color: black;
-            padding: 15px;
-            margin-top: 60px;
-           font-size: 14px;
-          opacity: 0.8;
-}
+            margin-top: 40px;
+            text-align: center;
+            background-color: darkgrey;
+            color: white;
+            bottom: 10px;
+            width: 100%;
+            font-size: 14px;
+            opacity: 0.9;
+            padding: 20px;
+        }
+        @media (max-width: 600px) {
+            nav {
+                flex-wrap: wrap;
+            }
+            .status-box {
+                font-size: 24px;
+            }
+        }
     </style>
 </head>
 <body>
-<div class="calculator-card">
-    <h2>R24 Internal Marks Calculator</h2>
-    <div class="input-group">
-        <label>Mid-Term 1 <span class="max-marks-hint">(Max: 30)</span></label>
-        <input type="number" id="mid1" min="0" max="30" placeholder="Enter marks out of 30">
-        <div class="error" id="errMid1">Marks cannot exceed 30</div>
-    </div>
-    <div class="input-group">
-        <label>Mid-Term 2 <span class="max-marks-hint">(Max: 30)</span></label>
-        <input type="number" id="mid2" min="0" max="30" placeholder="Enter marks out of 30">
-        <div class="error" id="errMid2">Marks cannot exceed 30</div>
-    </div>
-    <div class="input-group">
-        <label>AAT 1 <span class="max-marks-hint">(Max: 10)</span></label>
-        <input type="number" id="aat1" min="0" max="10" placeholder="Enter marks out of 10">
-        <div class="error" id="errAat1">Marks cannot exceed 10</div>
-    </div>
-    <div class="input-group">
-        <label>AAT 2 <span class="max-marks-hint">(Max: 10)</span></label>
-        <input type="number" id="aat2" min="0" max="10" placeholder="Enter marks out of 10">
-        <div class="error" id="errAat2">Marks cannot exceed 10</div>
-    </div>
-    <div class="input-group">
-        <label>Attendance Percentage <span class="max-marks-hint">(Required for 5 marks)</span></label>
-        <input type="number" id="attendance" min="0" max="100" placeholder="e.g., 85">
-        <div class="error" id="errAtt">Must be between 0 and 100</div>
-    </div>
-    <button onclick="calculateResult()">Check Result</button>
-    <!-- Results -->
-    <div id="resultSection">
-        <table class="breakdown-table">
-            <tr>
-                <td>Term Exam Marks</td>
-                <td id="resTerm">0 / 20</td>
-            </tr>
-            <tr>
-                <td>AAT Scaled Marks</td>
-                <td id="resAat">0 / 15</td>
-            </tr>
-            <tr>
-                <td>Attendance Marks</td>
-                <td id="resAtt">0 / 5</td>
-            </tr>
-            <tr style="border-top: 2px solid #333; font-size: 16px;">
-                <td><strong>Total Internal Marks</strong></td>
-                <td id="resTotal">0 / 40</td>
-            </tr>
-        </table>
-        <div id="statusBox" class="status-box">
-            RESULT
+    <header>
+        <img src="https://media.collegedekho.com/media/img/institute/crawled_images/bap.JPG" alt="Student Portal Banner">
+        <h1>Student Portal</h1>
+    </header>
+    <nav>
+        <button onclick="showSection('home')" class="active">Calculator</button>
+        <button onclick="showSection('r24')">R24 Rules</button>
+    </nav>
+    <div id="home" class="section active">
+        <div class="calculator-card">
+            <h2>Internal Marks Calculator (R24)</h2>
+            <div class="input-group">
+                <label>Mid-Term 1 <span class="max-marks-hint">(Max: 30)</span></label>
+                <input type="number" id="mid1" min="0" max="30" step="0.01" placeholder="Enter marks">
+                <div class="error" id="errMid1">Marks must be 0-30</div>
+            </div>
+            <div class="input-group">
+                <label>Mid-Term 2 <span class="max-marks-hint">(Max: 30)</span></label>
+                <input type="number" id="mid2" min="0" max="30" step="0.01" placeholder="Enter marks">
+                <div class="error" id="errMid2">Marks must be 0-30</div>
+            </div>
+            <div class="input-group">
+                <label>AAT 1 <span class="max-marks-hint">(Max: 10)</span></label>
+                <input type="number" id="aat1" min="0" max="10" step="0.01" placeholder="Enter marks">
+                <div class="error" id="errAat1">Marks must be 0-10</div>
+            </div>
+            <div class="input-group">
+                <label>AAT 2 <span class="max-marks-hint">(Max: 10)</span></label>
+                <input type="number" id="aat2" min="0" max="10" step="0.01" placeholder="Enter marks">
+                <div class="error" id="errAat2">Marks must be 0-10</div>
+            </div>
+            <div class="input-group">
+                <label>Attendance % <span class="max-marks-hint">(0-100)</span></label>
+                <input type="number" id="attendance" min="0" max="100" step="0.01" placeholder="e.g., 85">
+                <div class="error" id="errAtt">Must be 0-100</div>
+            </div>
+            <button class="calculate" onclick="calculateResult()">Calculate Internal Marks</button>  
+            <div id="resultSection">
+                <table class="breakdown-table">
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Marks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Term Exams (20)</td>
+                            <td id="resTerm">0 / 20</td>
+                        </tr>
+                        <tr>
+                            <td>AAT (15)</td>
+                            <td id="resAat">0 / 15</td>
+                        </tr>
+                        <tr>
+                            <td>Attendance (5)</td>
+                            <td id="resAtt">0 / 5</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td><strong>Total Internal</strong></td>
+                            <td id="resTotal"><strong>0 / 40</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="statusBox" class="status-box">RESULT</div>
+                <p style="text-align: center; font-style: italic; color: #666; margin: 0;">Need 16/40 (40%) + 75% attendance to pass internals</p>
+            </div>
         </div>
     </div>
-</div>
-<script>
-function calculateResult() {
-    // Hide previous errors and result
-    document.querySelectorAll('.error').forEach(el => el.style.display = 'none');
-    document.getElementById('resultSection').style.display = 'none';
-    // Get raw input values
-    let mid1Val = document.getElementById('mid1').value;
-    let mid2Val = document.getElementById('mid2').value;
-    let aat1Val = document.getElementById('aat1').value;
-    let aat2Val = document.getElementById('aat2').value;
-    let attVal = document.getElementById('attendance').value;
-    // ✅ Check if any field is empty
-    if (mid1Val === "" || mid2Val === "" || aat1Val === "" || aat2Val === "" || attVal === "") {
-        alert("Please fill all fields before checking result!");
-        return;
-    }
-    // Convert to numbers after checking empty
-    let mid1 = parseFloat(mid1Val);
-    let mid2 = parseFloat(mid2Val);
-    let aat1 = parseFloat(aat1Val);
-    let aat2 = parseFloat(aat2Val);
-    let attPerc = parseFloat(attVal);
-    let isValid = true;
-    if (mid1 < 0 || mid1 > 30) { document.getElementById('errMid1').style.display = 'block'; isValid = false; }
-    if (mid2 < 0 || mid2 > 30) { document.getElementById('errMid2').style.display = 'block'; isValid = false; }
-    if (aat1 < 0 || aat1 > 10) { document.getElementById('errAat1').style.display = 'block'; isValid = false; }
-    if (aat2 < 0 || aat2 > 10) { document.getElementById('errAat2').style.display = 'block'; isValid = false; }
-    if (attPerc < 0 || attPerc > 100) { document.getElementById('errAtt').style.display = 'block'; isValid = false; }
-    if (!isValid) return;
-    // 1. Calculate Term Exam (Max 20)
-    // Step A: Reduce from 30 to 20
-    let scaledMid1 = (mid1 / 30) * 20;
-    let scaledMid2 = (mid2 / 30) * 20; 
-    // Step B: 75% of best + 25% of other
-    let bestMid = Math.max(scaledMid1, scaledMid2);
-    let otherMid = Math.min(scaledMid1, scaledMid2);
-    let termMarks = (0.75 * bestMid) + (0.25 * otherMid);
-    // 2. Calculate AAT (Max 15)
-    // Step A: Average of tests
-    let aatAvg = (aat1 + aat2) / 2;
-    // Step B: Scale up to 15
-    let aatMarks = (aatAvg / 10) * 15;
-    // 3. Calculate Attendance (Max 5)
-    let attMarks = 0;
-    if (attPerc >= 90) attMarks = 5;
-    else if (attPerc >= 85) attMarks = 4;
-    else if (attPerc >= 80) attMarks = 3;
-    else if (attPerc >= 75) attMarks = 2;
-    else attMarks = 0;
-    // 4. Total Calculation
-    let totalMarks = termMarks + aatMarks + attMarks;
-    // 5. Display Results (rounded to 2 decimal places)
-    document.getElementById('resTerm').innerText = termMarks.toFixed(2) + " / 20";
-    document.getElementById('resAat').innerText = aatMarks.toFixed(2) + " / 15";
-    document.getElementById('resAtt').innerText = attMarks + " / 5";
-    document.getElementById('resTotal').innerText = totalMarks.toFixed(2) + " / 40";
-    let statusBox = document.getElementById('statusBox');  
-    // 6. Pass/Fail Logic 
-    // Standard rule: Need 40% to pass (16 marks out of 40) AND minimum 75% attendance
-    if (attPerc < 75) {
-        statusBox.innerText = "FAIL (Shortage of Attendance)";
-        statusBox.className = "status-box fail";
-    } else if (totalMarks < 16) {
-        statusBox.innerText = "FAIL (Less than 40%)";
-        statusBox.className = "status-box fail";
-    } else {
-        statusBox.innerText = "PASS";
-        statusBox.className = "status-box pass";
-    }
-    document.getElementById('resultSection').style.display = 'block';
-}
-</script>
-<footer style="text-align:center; margin-top:20px; color:white; font-size:14px;">
-    © 2026 Rahul |Y24ACB407 | Student Result Calculator
-</footer>
+    <div id="r24" class="section">
+        <div class="r24-rules calculator-card">
+            <h2>R24 Internal Marks Rules</h2>
+            <h3>Term Exams (20 marks):</h3>
+            <ul>
+                <li>Scale each mid (30→20): (mid/30)*20</li>
+                <li>Best mid * 75% + Other mid * 25%</li>
+            </ul>
+            <h3>AAT (15 marks):</h3>
+            <ul>
+                <li>Average AAT = (AAT1 + AAT2)/2</li>
+                <li>Scale: (avg/10)*15</li>
+            </ul>
+            <h3>Attendance (5 marks):</h3>
+            <ul>
+                <li>≥90%: 5, ≥85%: 4, ≥80%: 3, ≥75%: 2, &lt;75%: 0</li>
+            </ul>
+            <h3>Pass Criteria:</h3>
+            <ul>
+                <li>Total ≥16/40 AND Attendance ≥75%</li>
+            </ul>
+        </div>
+    </div>
+    <footer>
+        © 2026 Rahul | Department of Cyber Security | BEC R24 Compliant
+    </footer>
+    <script>
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+            if (sectionId === 'home') {
+                document.getElementById('resultSection').style.display = 'none';
+            }
+        }
+        function calculateResult() {
+            // Reset
+            document.querySelectorAll('.error').forEach(el => el.style.display = 'none');
+            const resultSection = document.getElementById('resultSection');
+            resultSection.style.display = 'none';
+            // Get values
+            const mid1 = parseFloat(document.getElementById('mid1').value) || 0;
+            const mid2 = parseFloat(document.getElementById('mid2').value) || 0;
+            const aat1 = parseFloat(document.getElementById('aat1').value) || 0;
+            const aat2 = parseFloat(document.getElementById('aat2').value) || 0;
+            const att = parseFloat(document.getElementById('attendance').value) || 0;
+            // Validation
+            let valid = true;
+            if (mid1 < 0 || mid1 > 30) { document.getElementById('errMid1').style.display = 'block'; valid = false; }
+            if (mid2 < 0 || mid2 > 30) { document.getElementById('errMid2').style.display = 'block'; valid = false; }
+            if (aat1 < 0 || aat1 > 10) { document.getElementById('errAat1').style.display = 'block'; valid = false; }
+            if (aat2 < 0 || aat2 > 10) { document.getElementById('errAat2').style.display = 'block'; valid = false; }
+            if (att < 0 || att > 100) { document.getElementById('errAtt').style.display = 'block'; valid = false; }
+            if (!valid || (mid1 === 0 && mid2 === 0 && aat1 === 0 && aat2 === 0 && att === 0)) {
+                if (document.querySelectorAll('.error').length === 0 || !valid) alert('Please enter valid marks in all fields!');
+                return;
+            }
+            // Calculations
+            const scaledMid1 = (mid1 / 30) * 20;
+            const scaledMid2 = (mid2 / 30) * 20;
+            const bestMid = Math.max(scaledMid1, scaledMid2);
+            const otherMid = Math.min(scaledMid1, scaledMid2);
+            const termMarks = (0.75 * bestMid) + (0.25 * otherMid);
+            const aatAvg = (aat1 + aat2) / 2;
+            const aatMarks = (aatAvg / 10) * 15;
+            let attMarks = 0;
+            if (att >= 90) attMarks = 5;
+            else if (att >= 85) attMarks = 4;
+            else if (att >= 80) attMarks = 3;
+            else if (att >= 75) attMarks = 2;
+            const total = termMarks + aatMarks + attMarks;
+            // Display
+            document.getElementById('resTerm').textContent = termMarks.toFixed(2) + ' / 20';
+            document.getElementById('resAat').textContent = aatMarks.toFixed(2) + ' / 15';
+            document.getElementById('resAtt').textContent = attMarks + ' / 5';
+            document.getElementById('resTotal').innerHTML = '<strong>' + total.toFixed(2) + ' / 40</strong>';
+            const statusBox = document.getElementById('statusBox');
+            if (att < 75) {
+                statusBox.textContent = 'FAIL (Attendance Shortage)';
+                statusBox.className = 'status-box fail';
+            } else if (total < 16) {
+                statusBox.textContent = 'FAIL (Below 40%)';
+                statusBox.className = 'status-box fail';
+            } else {
+                statusBox.textContent = 'PASS ✅';
+                statusBox.className = 'status-box pass';
+            }
+            resultSection.style.display = 'block';
+        }
+        // Enter key support
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const active = document.activeElement;
+                if (active.tagName === 'INPUT') {
+                    calculateResult();
+                }
+            }
+        });
+    </script>
 </body>
 </html>
